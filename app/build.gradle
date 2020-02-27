@@ -34,6 +34,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
     implementation "com.paulrybitskyi.persistentsearchview:persistentsearchview:1.1.2"
+    implementation 'info.hoang8f:fbutton:1.0.5'
 }
 repositories {
     mavenCentral()

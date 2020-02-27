@@ -26,11 +26,12 @@ import com.paulrybitskyi.persistentsearchview.listeners.OnSearchConfirmedListene
 import java.util.ArrayList;
 import java.util.List;
 
+import info.hoang8f.widget.FButton;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView addBtn;
+    FButton addBtn;
     TextView tv;
     NoteDBHelper noteDBHelper;
     RecyclerView rv;
@@ -97,9 +98,20 @@ public class MainActivity extends AppCompatActivity {
     public void addNoteDialog() {
         ViewGroup viewGroup = findViewById(android.R.id.content);
         final View dialogView = LayoutInflater.from(this).inflate(R.layout.add_note, viewGroup, false);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogView);
         builder.setCancelable(false);
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+
+                    }
+                });
+            }
+        });
         builder.setPositiveButton("Add",
                 new DialogInterface.OnClickListener() {
                     @Override
