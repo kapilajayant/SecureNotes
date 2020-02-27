@@ -17,7 +17,6 @@
             android:text="note"
             android:gravity="center"
             android:drawablePadding="10dp"
-            android:drawableRight="@drawable/ic_content_copy_black_24dp"
             android:id="@+id/tv_note"
             android:layout_margin="10dp"/>
 

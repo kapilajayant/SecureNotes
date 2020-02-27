@@ -19,8 +19,12 @@ import android.widget.Toast;
 import com.example.notes.Adapters.NotesAdapter;
 import com.example.notes.Models.Note;
 import com.example.notes.db.NoteDBHelper;
+import com.paulrybitskyi.persistentsearchview.PersistentSearchView;
+import com.paulrybitskyi.persistentsearchview.adapters.model.SuggestionItem;
+import com.paulrybitskyi.persistentsearchview.listeners.OnSearchConfirmedListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
@@ -30,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
     TextView tv;
     NoteDBHelper noteDBHelper;
     RecyclerView rv;
+    PersistentSearchView persistentSearchView;
+    NotesAdapter adapter;
+    ArrayList<String> allNotes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,32 @@ public class MainActivity extends AppCompatActivity {
         addBtn = findViewById(R.id.addBtn);
 //        tv = findViewById(R.id.tv);
         rv = findViewById(R.id.rv);
+        rv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+
+        RecyclerView.LayoutManager manager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
+        rv.setLayoutManager(manager);
+        persistentSearchView = findViewById(R.id.persistentSearchView);
+        persistentSearchView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        persistentSearchView.setOnSearchConfirmedListener(new OnSearchConfirmedListener() {
+            @Override
+            public void onSearchConfirmed(PersistentSearchView searchView, String query) {
+                Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
+                allNotes = new ArrayList<>(noteDBHelper.getSearchData(query));
+                adapter = new NotesAdapter(getApplicationContext(), allNotes);
+                rv.setAdapter(adapter);
+                rv.scrollToPosition(adapter.getItemCount()-1);
+                rv.setItemAnimator(new SlideInUpAnimator());
+                persistentSearchView.collapse(true);
+            }
+        });
+
+        persistentSearchView.setOnClearInputBtnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                persistentSearchView.collapse(true);
+                showNotes();
+            }
+        });
         showNotes();
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,13 +85,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showNotes() {
-        ArrayList<String> allNotes = new ArrayList<>(noteDBHelper.getAllNotes());
-//        for (int i =0;i<allNotes.size();i++)
-//        {
-//            tv.setText(allNotes.get(i));
-            RecyclerView.LayoutManager manager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
-            rv.setLayoutManager(manager);
-            NotesAdapter adapter = new NotesAdapter(getApplicationContext(), allNotes);
+            allNotes = new ArrayList<>(noteDBHelper.getAllNotes());
+            adapter = new NotesAdapter(getApplicationContext(), allNotes);
             rv.setAdapter(adapter);
             rv.scrollToPosition(adapter.getItemCount()-1);
             rv.setItemAnimator(new SlideInUpAnimator());
@@ -71,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         final View dialogView = LayoutInflater.from(this).inflate(R.layout.add_note, viewGroup, false);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogView);
+        builder.setCancelable(false);
         builder.setPositiveButton("Add",
                 new DialogInterface.OnClickListener() {
                     @Override

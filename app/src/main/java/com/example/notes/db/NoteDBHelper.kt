@@ -51,8 +51,32 @@ class NoteDBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?)
         return list_data
     }
 
-    fun deleteNote(){
+    fun getSearchData(query : String): ArrayList<String>?
+    {
+        val db = this.readableDatabase
+        var list_data : ArrayList<String> = ArrayList()
+//        var c = db.query(TABLE_NAME, arrayOf<String>(ColumnNoteText),"$ColumnNoteText = ?", arrayOf<String>("Ha bhai"), null,null,null)
+        var c = db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $ColumnNoteText LIKE '%$query%'", null)
+        var i : Int = 0
+//        var list: MutableList<String> = mutableListOf<String>()
+        c!!.moveToFirst()
+        if (c?.count != 0) {
+            while (c.moveToNext()) {
+                i++
+                var n = c.getString(c.getColumnIndex(NoteDBHelper.ColumnNoteText))
+                var id = c.getString(c.getColumnIndex(NoteDBHelper.ColumnId))
+//                noet.text = noet.text.toString() + n
+                list_data.add(n)
+            }
+            c.close()
+        }
+        return list_data
+    }
 
+    fun deleteNote(i: String):Boolean {
+        val db = this.writableDatabase
+        val c = db.delete(TABLE_NAME, "$ColumnNoteText='$i'",null )
+        return c > 0
     }
 
     companion object{

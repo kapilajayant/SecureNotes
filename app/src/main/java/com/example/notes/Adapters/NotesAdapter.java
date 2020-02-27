@@ -1,8 +1,11 @@
 package com.example.notes.Adapters;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.notes.R;
+import com.example.notes.db.NoteDBHelper;
 
 import java.util.ArrayList;
 
@@ -58,7 +62,10 @@ public class NotesAdapter extends RecyclerView.Adapter <NotesAdapter.NoteViewHol
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(mContext, String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, mList.get(getAdapterPosition())+" Copied!", Toast.LENGTH_SHORT).show();
+                    ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("label", mList.get(getAdapterPosition()));
+                    clipboard.setPrimaryClip(clip);
                 }
             });
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -77,8 +84,14 @@ public class NotesAdapter extends RecyclerView.Adapter <NotesAdapter.NoteViewHol
                                     break;
                                 case R.id.menu2:
                                     Toast.makeText(mContext, "Pressed Delete", Toast.LENGTH_SHORT).show();
-                                    mList.remove(getAdapterPosition());
-                                    notifyItemRemoved(getAdapterPosition());
+                                    NoteDBHelper noteDBHelper = new NoteDBHelper(mContext, null);
+                                    Boolean isDeleted = noteDBHelper.deleteNote(mList.get(getAdapterPosition()));
+                                    if(isDeleted){
+                                        Toast.makeText(mContext, "Note Deleted Successfully", Toast.LENGTH_SHORT).show();
+                                        mList.remove(getAdapterPosition());
+                                        notifyItemRemoved(getAdapterPosition());
+                                        notifyDataSetChanged();
+                                    }
                                     break;
                             }
                             return false;
