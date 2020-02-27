@@ -48,10 +48,12 @@ public class MainActivity extends AppCompatActivity {
         addBtn = findViewById(R.id.addBtn);
 //        tv = findViewById(R.id.tv);
         rv = findViewById(R.id.rv);
+        rv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
 
         RecyclerView.LayoutManager manager = new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(manager);
         persistentSearchView = findViewById(R.id.persistentSearchView);
+        persistentSearchView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         persistentSearchView.setOnSearchConfirmedListener(new OnSearchConfirmedListener() {
             @Override
             public void onSearchConfirmed(PersistentSearchView searchView, String query) {
