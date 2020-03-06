@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         addBtn = findViewById(R.id.addBtn);
 //        tv = findViewById(R.id.tv);
         rv = findViewById(R.id.rv);
-//        rv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        rv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
 
         RecyclerView.LayoutManager manager = new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(manager);
