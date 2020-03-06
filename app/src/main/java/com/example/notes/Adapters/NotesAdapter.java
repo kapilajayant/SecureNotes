@@ -1,5 +1,6 @@
 package com.example.notes.Adapters;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.notes.MainActivity;
 import com.example.notes.R;
 import com.example.notes.db.NoteDBHelper;
 
@@ -81,6 +83,7 @@ public class NotesAdapter extends RecyclerView.Adapter <NotesAdapter.NoteViewHol
                             {
                                 case R.id.menu1:
                                     Toast.makeText(mContext, "Pressed Update", Toast.LENGTH_SHORT).show();
+                                    updateDialog(view, getAdapterPosition());
                                     break;
                                 case R.id.menu2:
                                     Toast.makeText(mContext, "Pressed Delete", Toast.LENGTH_SHORT).show();
@@ -128,6 +131,65 @@ public class NotesAdapter extends RecyclerView.Adapter <NotesAdapter.NoteViewHol
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         }
+    }
+
+    private void updateDialog(View view, final int adapterPosition) {
+        ViewGroup viewGroup = view.findViewById(android.R.id.content);
+        Activity activity = (Activity)mContext;
+        final View dialogView = LayoutInflater.from(activity).inflate(R.layout.add_note, viewGroup, false);
+        TextView title_tv = dialogView.findViewById(R.id.title_tv);
+        title_tv.setText("Update Note");
+        final EditText et = dialogView.findViewById(R.id.et);
+        et.setHint(mList.get(adapterPosition));
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setView(dialogView);
+        builder.setCancelable(false);
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+
+                    }
+                });
+            }
+        });
+        builder.setPositiveButton("Update",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        NoteDBHelper noteDBHelper = new NoteDBHelper(mContext,null);
+                        ArrayList<String> list = noteDBHelper.updateNote(mList.get(adapterPosition),et.getText().toString());
+//                        refresh(list);
+//                        mList.clear();
+//                        mList = list;
+                        mList = new NoteDBHelper(mContext,null).getAllNotes();
+                        notifyDataSetChanged();
+//                        new NotesAdapter(mContext, list);
+//                        mContext.startActivity(new Intent(mContext, MainActivity.class));
+//                        ((Activity) mContext).finish();
+                        Toast.makeText(mContext, "Note Updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
+        builder.setOnCancelListener(
+                new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        Toast.makeText(mContext, "Cancelled", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    public void refresh(ArrayList<String> list){
+        this.mList.clear();
+        this.mList = list;
+        notifyDataSetChanged();
     }
 
 }

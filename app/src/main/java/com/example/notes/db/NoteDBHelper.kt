@@ -37,11 +37,10 @@ class NoteDBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?)
         var c = db.rawQuery("SELECT * FROM $TABLE_NAME", null)
         var i : Int = 0
 //        var list: MutableList<String> = mutableListOf<String>()
-        c!!.moveToFirst()
         if (c?.count != 0) {
             while (c.moveToNext()) {
                 i++
-                var n = c.getString(c.getColumnIndex(NoteDBHelper.ColumnNoteText))
+                var n = c.getString(c.getColumnIndex(ColumnNoteText))
                 var id = c.getString(c.getColumnIndex(NoteDBHelper.ColumnId))
 //                noet.text = noet.text.toString() + n
                 list_data.add(n)
@@ -51,25 +50,42 @@ class NoteDBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?)
         return list_data
     }
 
+    fun updateNote(oldText: String, newText: String):ArrayList<String>{
+        var list_data : ArrayList<String> = ArrayList()
+        val db = this.writableDatabase
+        db.execSQL("UPDATE $TABLE_NAME  SET $ColumnNoteText = '$newText' WHERE $ColumnNoteText = '$oldText'")
+//
+//        var i : Int = 0
+////        var list: MutableList<String> = mutableListOf<String>()
+//        try {
+//            while (c.moveToNext()) {
+//                val n = c.getString(c.getColumnIndex(ColumnNoteText))
+//                list_data.add(n)
+//            }
+//        }finally {
+//            c?.close()
+//        }
+
+        return list_data
+    }
+
     fun getSearchData(query : String): ArrayList<String>?
     {
         val db = this.readableDatabase
         var list_data : ArrayList<String> = ArrayList()
 //        var c = db.query(TABLE_NAME, arrayOf<String>(ColumnNoteText),"$ColumnNoteText = ?", arrayOf<String>("Ha bhai"), null,null,null)
-        var c = db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $ColumnNoteText LIKE '%$query%'", null)
+        val c = db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $ColumnNoteText LIKE '%$query%'", null)
         var i : Int = 0
 //        var list: MutableList<String> = mutableListOf<String>()
-        c!!.moveToFirst()
-        if (c?.count != 0) {
+        try {
             while (c.moveToNext()) {
-                i++
-                var n = c.getString(c.getColumnIndex(NoteDBHelper.ColumnNoteText))
-                var id = c.getString(c.getColumnIndex(NoteDBHelper.ColumnId))
-//                noet.text = noet.text.toString() + n
+                val n = c.getString(c.getColumnIndex(ColumnNoteText))
                 list_data.add(n)
             }
-            c.close()
+        }finally {
+            c?.close()
         }
+
         return list_data
     }
 

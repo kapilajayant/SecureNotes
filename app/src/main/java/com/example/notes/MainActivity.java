@@ -1,12 +1,17 @@
 package com.example.notes;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,17 +49,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        checkPermission(Manifest.permission.CAMERA,100);
+
         noteDBHelper = new NoteDBHelper(getApplicationContext(), null);
 
         addBtn = findViewById(R.id.addBtn);
 //        tv = findViewById(R.id.tv);
         rv = findViewById(R.id.rv);
-        rv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+//        rv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
 
         RecyclerView.LayoutManager manager = new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(manager);
         persistentSearchView = findViewById(R.id.persistentSearchView);
-        persistentSearchView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+//        persistentSearchView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         persistentSearchView.setOnSearchConfirmedListener(new OnSearchConfirmedListener() {
             @Override
             public void onSearchConfirmed(PersistentSearchView searchView, String query) {
@@ -63,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 adapter = new NotesAdapter(getApplicationContext(), allNotes);
                 rv.setAdapter(adapter);
                 rv.scrollToPosition(adapter.getItemCount()-1);
-                rv.setItemAnimator(new SlideInUpAnimator());
                 persistentSearchView.collapse(true);
             }
         });
@@ -75,7 +81,12 @@ public class MainActivity extends AppCompatActivity {
                 showNotes();
             }
         });
+
+        //called upon onCreate() method
+        //---------------------------------------------
         showNotes();
+        //---------------------------------------------
+
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,15 +96,50 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void showNotes() {
-            allNotes = new ArrayList<>(noteDBHelper.getAllNotes());
-            adapter = new NotesAdapter(getApplicationContext(), allNotes);
-            rv.setAdapter(adapter);
-            rv.scrollToPosition(adapter.getItemCount()-1);
-            rv.setItemAnimator(new SlideInUpAnimator());
-//        }
+    public void checkPermission(String permission, int requestCode)
+    {
+        // Checking if permission is not granted
+        if (ContextCompat.checkSelfPermission(MainActivity.this,permission)== PackageManager.PERMISSION_DENIED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,new String[] { permission },requestCode);
+        }
+        else {
+            Toast
+                    .makeText(MainActivity.this,
+                            "Permission already granted",
+                            Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,@NonNull String[] permissions,@NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+
+        if (requestCode == 100) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(MainActivity.this,
+                        "Camera Permission Granted",
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+            else {
+                Toast.makeText(MainActivity.this,
+                        "Camera Permission Denied",
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
+    }
+
+    public void showNotes() {
+            allNotes = new ArrayList<>(noteDBHelper.getAllNotes());
+            adapter = new NotesAdapter(this, allNotes);
+            rv.setAdapter(adapter);
+            rv.scrollToPosition(adapter.getItemCount()-1);
+    }
 
     public void addNoteDialog() {
         ViewGroup viewGroup = findViewById(android.R.id.content);
@@ -135,4 +181,5 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+
 }
