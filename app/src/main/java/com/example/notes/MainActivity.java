@@ -9,15 +9,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import androidx.appcompat.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     TextView tv;
     NoteDBHelper noteDBHelper;
     RecyclerView rv;
-    PersistentSearchView persistentSearchView;
+
     NotesAdapter adapter;
     ArrayList<String> allNotes;
 
@@ -56,31 +63,9 @@ public class MainActivity extends AppCompatActivity {
         addBtn = findViewById(R.id.addBtn);
 //        tv = findViewById(R.id.tv);
         rv = findViewById(R.id.rv);
-        rv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
 
-        RecyclerView.LayoutManager manager = new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
+        RecyclerView.LayoutManager manager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(manager);
-        persistentSearchView = findViewById(R.id.persistentSearchView);
-//        persistentSearchView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-        persistentSearchView.setOnSearchConfirmedListener(new OnSearchConfirmedListener() {
-            @Override
-            public void onSearchConfirmed(PersistentSearchView searchView, String query) {
-                Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
-                allNotes = new ArrayList<>(noteDBHelper.getSearchData(query));
-                adapter = new NotesAdapter(getApplicationContext(), allNotes);
-                rv.setAdapter(adapter);
-                rv.scrollToPosition(adapter.getItemCount()-1);
-                persistentSearchView.collapse(true);
-            }
-        });
-
-        persistentSearchView.setOnClearInputBtnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                persistentSearchView.collapse(true);
-                showNotes();
-            }
-        });
 
         //called upon onCreate() method
         //---------------------------------------------
@@ -138,13 +123,15 @@ public class MainActivity extends AppCompatActivity {
             allNotes = new ArrayList<>(noteDBHelper.getAllNotes());
             adapter = new NotesAdapter(this, allNotes);
             rv.setAdapter(adapter);
-            rv.scrollToPosition(adapter.getItemCount()-1);
+            rv.smoothScrollToPosition(adapter.getItemCount()-1);
+
     }
 
     public void addNoteDialog() {
         ViewGroup viewGroup = findViewById(android.R.id.content);
         final View dialogView = LayoutInflater.from(this).inflate(R.layout.add_note, viewGroup, false);
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        viewGroup.setBackgroundColor(getResources().getColor(R.color.custom_gray));
         builder.setView(dialogView);
         builder.setCancelable(false);
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -182,4 +169,38 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+
+        final MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.search_menu, menu);
+        final MenuItem searchItem = menu.findItem(R.id.item_search);
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(searchView,0);
+                return false;
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                searchView.onActionViewCollapsed();
+                searchView.clearFocus();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                adapter.getFilter().filter(s);
+                return false;
+            }
+        });
+
+        return true;
+    }
 }

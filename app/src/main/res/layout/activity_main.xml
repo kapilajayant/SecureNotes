@@ -4,31 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/custom_gray"
     tools:context=".MainActivity">
-
-    <com.paulrybitskyi.persistentsearchview.PersistentSearchView
-        android:id="@+id/persistentSearchView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 <androidx.recyclerview.widget.RecyclerView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/rv"
-    android:layout_below="@id/persistentSearchView"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_alignParentTop="true"
     android:layout_above="@id/addBtn"
-    android:layout_marginTop="10dp"
-    android:layout_marginRight="20dp"
-    android:layout_marginBottom="20dp"
-    android:layout_marginLeft="20dp"
     />
 
     <info.hoang8f.widget.FButton
         android:id="@+id/addBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:backgroundTint="@color/colorPrimaryDark"
