@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -131,6 +132,10 @@ public class MainActivity extends AppCompatActivity {
         ViewGroup viewGroup = findViewById(android.R.id.content);
         final View dialogView = LayoutInflater.from(this).inflate(R.layout.add_note, viewGroup, false);
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final EditText et = dialogView.findViewById(R.id.et);
+        et.requestFocus();
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         viewGroup.setBackgroundColor(getResources().getColor(R.color.custom_gray));
         builder.setView(dialogView);
         builder.setCancelable(false);
@@ -140,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
                 builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
                     }
                 });
             }
@@ -149,10 +155,14 @@ public class MainActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        EditText et = dialogView.findViewById(R.id.et);
-                        noteDBHelper.addNote(et.getText().toString());
-                        Toast.makeText(getApplicationContext(), "Note Added", Toast.LENGTH_SHORT).show();
-                        showNotes();
+                        if (et.getText().toString().length()>0)
+                        {
+                            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
+                            noteDBHelper.addNote(et.getText().toString());
+                            Toast.makeText(getApplicationContext(), "Note Added", Toast.LENGTH_SHORT).show();
+                            showNotes();
+                        }
                     }
                 }
         );

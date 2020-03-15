@@ -20,6 +20,7 @@
         android:minHeight="100dp"
         android:id="@+id/et"
         android:hint="Add some notes here"
+        android:focusedByDefault="true"
         android:inputType="textMultiLine"
         android:layout_marginLeft="30dp"
         android:layout_marginStart="30dp"
