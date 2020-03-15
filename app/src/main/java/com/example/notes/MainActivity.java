@@ -150,13 +150,16 @@ public class MainActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
                         if (et.getText().toString().length()>0)
                         {
-                            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
                             noteDBHelper.addNote(et.getText().toString());
                             Toast.makeText(getApplicationContext(), "Note Added", Toast.LENGTH_SHORT).show();
                             showNotes();
+                        }
+                        else {
+                            et.setError("Type something");
                         }
                     }
                 }
