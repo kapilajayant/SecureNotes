@@ -216,39 +216,37 @@ public class NotesAdapter extends RecyclerView.Adapter <NotesAdapter.NoteViewHol
         title_tv.setText("Update Note");
         final EditText et = dialogView.findViewById(R.id.et);
         et.requestFocus();
-        ((Activity) mContext).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-//        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.showSoftInput(et,InputMethodManager.SHOW_FORCED);
+        final InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         et.setText(mList.get(adapterPosition));
+        et.setSelection(et.getText().length());
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(dialogView);
         builder.setCancelable(false);
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-
-                    }
-                });
+                InputMethodManager imm = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
             }
         });
         builder.setPositiveButton("Update",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        NoteDBHelper noteDBHelper = new NoteDBHelper(mContext,null);
-                        ArrayList<String> list = noteDBHelper.updateNote(mList.get(adapterPosition),et.getText().toString());
-//                        refresh(list);
-//                        mList.clear();
-//                        mList = list;
-                        mList = new NoteDBHelper(mContext,null).getAllNotes();
-                        notifyDataSetChanged();
-//                        new NotesAdapter(mContext, list);
-//                        mContext.startActivity(new Intent(mContext, MainActivity.class));
-//                        ((Activity) mContext).finish();
-                        Toast.makeText(mContext, "Note Updated", Toast.LENGTH_SHORT).show();
+                        if (et.getText().toString().length()>0) {
+
+                            NoteDBHelper noteDBHelper = new NoteDBHelper(mContext, null);
+                            ArrayList<String> list = noteDBHelper.updateNote(mList.get(adapterPosition), et.getText().toString());
+                            mList = new NoteDBHelper(mContext, null).getAllNotes();
+                            notifyDataSetChanged();
+                            InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
+                            Toast.makeText(mContext, "Note Updated", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            et.setError("Enter Something");
+                        }
                     }
                 }
         );

@@ -4,10 +4,12 @@ public class Note {
 
     String noteText;
     String id;
+    String colorId;
 
-    public Note(String noteText, String id) {
+    public Note(String noteText, String id, String colorId) {
         this.noteText = noteText;
         this.id = id;
+        this.colorId = colorId;
     }
 
     public String getNoteText() {
@@ -24,5 +26,13 @@ public class Note {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(String colorId) {
+        this.colorId = colorId;
     }
 }
