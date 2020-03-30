@@ -51,10 +51,13 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -112,11 +115,7 @@ public class MainActivity extends AppCompatActivity implements BottomSheetMenu.B
             ActivityCompat.requestPermissions(MainActivity.this,new String[] { permission },requestCode);
         }
         else {
-            Toast
-                    .makeText(MainActivity.this,
-                            "Permission already granted",
-                            Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(MainActivity.this,"Permission already granted",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -316,11 +315,14 @@ public class MainActivity extends AppCompatActivity implements BottomSheetMenu.B
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 Date date = new Date();
                 try {
+                    saveJSON(allNotes);
+                    Toast.makeText(getApplicationContext(), "inside try", Toast.LENGTH_SHORT).show();
 //                    createBackup();
-                    saveExcelFile(MainActivity.this, "hui");
+//                    saveExcelFile(MainActivity.this, "hui");
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                     Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
                 }
         }
@@ -363,6 +365,30 @@ public class MainActivity extends AppCompatActivity implements BottomSheetMenu.B
                 }
             }
             Toast.makeText(MainActivity.this, "Excel Sheet Generated", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void saveJSON(ArrayList<String> list){
+
+        JSONObject jsonObj = new JSONObject();
+//        for (int i =0;i< list.size();i++) {
+            try {
+//                jsonObj.put(String.valueOf(i), list.get(i));
+                jsonObj.put("1",1);
+                jsonObj.put("2",2);
+                jsonObj.put("3",3);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+//        }
+//        File folder = context.getExternalFilesDir(null);
+        File file = new File(Environment.getExternalStorageDirectory(),"backup.json");
+        try {
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(jsonObj.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
