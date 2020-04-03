@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements BottomSheetMenu.B
             allNotes = new ArrayList<>(noteDBHelper.getAllNotes());
             adapter = new NotesAdapter(this, allNotes);
             rv.setAdapter(adapter);
-            rv.smoothScrollToPosition(adapter.getItemCount()-1);
+            rv.smoothScrollToPosition(adapter.getItemCount());
     }
 
     public void addNoteDialog() {
@@ -315,8 +315,8 @@ public class MainActivity extends AppCompatActivity implements BottomSheetMenu.B
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 Date date = new Date();
                 try {
-                    saveJSON(allNotes);
-                    Toast.makeText(getApplicationContext(), "inside try", Toast.LENGTH_SHORT).show();
+//                    saveJSON(allNotes);
+//                    Toast.makeText(getApplicationContext(), "inside try", Toast.LENGTH_SHORT).show();
 //                    createBackup();
 //                    saveExcelFile(MainActivity.this, "hui");
                 }
