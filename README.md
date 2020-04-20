@@ -1,6 +1,6 @@
 # SecureNotes
 Android Notes App
 
-Using local sqlite database
-
-Staggered Grid Manager
+* Using local sqlite database
+* Staggered Grid Manager
+* Clean UI
