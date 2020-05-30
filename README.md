@@ -5,5 +5,5 @@ Android Notes App
 * Staggered Grid Manager
 * Clean UI
 
-## Remaining Tasks
-> Import/Export Data
+>Remaining Tasks
+* Import/Export Notes
